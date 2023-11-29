@@ -14,6 +14,11 @@ output "kubernetes_application_attributes" {
 }
 
 output "iam_role_attributes" {
-  description = "<$addon-name> IAM role atributes"
+  description = "registry-cache IAM role atributes"
   value       = try(aws_iam_role.this[0], {})
+}
+
+output "values" {
+  description = "registry-cache input values"
+  value = var.values
 }
