@@ -1,5 +1,5 @@
 locals {
-  values = yamlencode({
+  values_default = yamlencode({
     "serviceAccount" : {
       "create" : var.service_account_create
       "name" : var.service_account_name

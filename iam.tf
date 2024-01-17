@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "this_assume" {
 resource "aws_iam_policy" "this" {
   count = local.irsa_role_create && (var.irsa_policy_enabled || var.irsa_assume_role_enabled) ? 1 : 0
 
-  name        = "${var.irsa_role_name_prefix}-${var.helm_chart_name}" # tflint-ignore: aws_iam_policy_invalid_name
+  name        = "${var.irsa_role_name_prefix}-${var.helm_release_name}" # tflint-ignore: aws_iam_policy_invalid_name
   path        = "/"
   description = "Policy for registry-cache service"
   policy      = var.irsa_assume_role_enabled ? data.aws_iam_policy_document.this_assume[0].json : data.aws_iam_policy_document.this[0].json
@@ -69,7 +69,7 @@ data "aws_iam_policy_document" "this_irsa" {
 
 resource "aws_iam_role" "this" {
   count              = local.irsa_role_create ? 1 : 0
-  name               = "${var.irsa_role_name_prefix}-${var.helm_chart_name}" # tflint-ignore: aws_iam_role_invalid_name
+  name               = "${var.irsa_role_name_prefix}-${var.helm_release_name}" # tflint-ignore: aws_iam_role_invalid_name
   assume_role_policy = data.aws_iam_policy_document.this_irsa[0].json
   tags               = var.irsa_tags
 }
