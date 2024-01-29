@@ -2,21 +2,6 @@ locals {
   irsa_role_create = var.enabled && var.rbac_create && var.service_account_create && var.irsa_role_create
 }
 
-data "aws_iam_policy_document" "this" {
-  count = local.irsa_role_create && var.irsa_policy_enabled && !var.irsa_assume_role_enabled ? 1 : 0
-
-  # Example statement (modify it before using this module)
-  # Use var.aws_partition if ARN is specified in resources section
-  statement {
-    effect = "Allow"
-    actions = [
-      "elasticloadbalancing:RegisterTargets",
-      "elasticloadbalancing:DeregisterTargets"
-    ]
-    resources = ["arn:${var.aws_partition}:elasticloadbalancing:*:*:targetgroup/*/*"]
-  }
-}
-
 data "aws_iam_policy_document" "this_assume" {
   count = local.irsa_role_create && var.irsa_assume_role_enabled ? 1 : 0
 
@@ -33,12 +18,12 @@ data "aws_iam_policy_document" "this_assume" {
 }
 
 resource "aws_iam_policy" "this" {
-  count = local.irsa_role_create && (var.irsa_policy_enabled || var.irsa_assume_role_enabled) ? 1 : 0
+  count = local.irsa_role_create && var.irsa_assume_role_enabled ? 1 : 0
 
   name        = "${var.irsa_role_name_prefix}-${var.helm_release_name}" # tflint-ignore: aws_iam_policy_invalid_name
   path        = "/"
   description = "Policy for registry-cache service"
-  policy      = var.irsa_assume_role_enabled ? data.aws_iam_policy_document.this_assume[0].json : data.aws_iam_policy_document.this[0].json
+  policy      = data.aws_iam_policy_document.this_assume[0].json
 
   tags = var.irsa_tags
 }
@@ -75,7 +60,7 @@ resource "aws_iam_role" "this" {
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
-  count      = local.irsa_role_create && var.irsa_policy_enabled ? 1 : 0
+  count      = local.irsa_role_create && var.irsa_assume_role_enabled ? 1 : 0
   role       = aws_iam_role.this[0].name
   policy_arn = aws_iam_policy.this[0].arn
 }
