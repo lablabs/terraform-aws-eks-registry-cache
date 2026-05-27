@@ -11,8 +11,8 @@ locals {
     name = "registry-cache"
 
     helm_chart_name    = "docker-registry"
-    helm_chart_version = "2.2.3"
-    helm_repo_url      = "https://lablabs.github.io/docker-registry.helm"
+    helm_chart_version = "3.0.0"
+    helm_repo_url      = "ghcr.io/lablabs/docker-registry.helm"
   }
 
   addon_irsa = {
